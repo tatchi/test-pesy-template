@@ -1,0 +1,72 @@
+# Steps for publishing project cache
+
+steps:
+  - bash: 'mkdir -p $(Build.StagingDirectory)'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: '[Cache][Publish] Create cache directory'
+
+  # continueOnError because on windows it has a permission denied error but the
+  # export succeeds.
+  - script: "esy export-dependencies"
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: "esy export-dependencies"
+
+  - bash: pwd && ls _export/* && mv _export '$(Build.StagingDirectory)' && ls '$(Build.StagingDirectory)/_export/'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: '[Cache][Publish] move export to staging dir'
+
+  # - bash: cd $ESY__CACHE_INSTALL_PATH && tar -czf $(Build.StagingDirectory)/esy-cache.tar .
+  #   workingDirectory: ''
+  #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+  #   displayName: '[Cache][Publish] Tar esy cache directory'
+
+  # - bash: 'cd $(ESY__NPM_ROOT) && tar -czf $(Build.StagingDirectory)/npm-cache.tar .'
+  #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], variables['System.PullRequest.TargetBranch']))
+  #   displayName: '[Cache][Publish] Tar npm cache directory'
+
+  - task: ArchiveFiles@2
+    displayName: '[Cache][Publish] compress export folder'
+    inputs:
+      rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.StagingDirectory)/_export.zip'
+
+  - bash: 'shasum _export.zip | cut -d " " -f 1 | tr -d "\n" > checksum.txt'
+    displayName: '[Cache][Publish] calcule export.zip sha1 on Linux/Darwin'
+    workingDirectory: $(Build.StagingDirectory)
+    condition: or(eq(variables['Agent.OS'], 'Darwin'), eq(variables['Agent.OS'], 'Linux'))
+
+  - bash: 'sha1sum _export.zip | cut -d " " -f 1 | tr -d "\n" > checksum.txt'
+    displayName: '[Cache][Publish] calcule export.zip sha1 on Windows'
+    workingDirectory: $(Build.StagingDirectory)
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
+
+  - task: PublishBuildArtifacts@1
+    displayName: '[Cache][Publish] Upload tarball'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    # TODO: The CI Build caches are pulled down by the last successful buildID
+    # for the target branch.
+    inputs:
+      pathToPublish: '$(Build.StagingDirectory)/_export.zip'
+      artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
+      parallel: true
+      parallelCount: 8
+
+  - task: PublishBuildArtifacts@1
+    displayName: '[Cache][Publish] upload checksum'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    inputs:
+      pathToPublish: '$(Build.StagingDirectory)/checksum.txt'
+      artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)-checksum'
+      parallel: true
+      parallelCount: 8
+
+  - task: DeleteFiles@1
+    displayName: 'Remove checksum files'
+    inputs:
+      SourceFolder: $(Build.StagingDirectory)
+      Contents: |
+        _export.zip
+        checksum.txt

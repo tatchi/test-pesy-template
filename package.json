@@ -1,0 +1,44 @@
+{
+  "name": "pesy-play",
+  "version": "0.1.0",
+  "description": "Starter Reason Project",
+  "esy": {
+    "build": "dune build -p #{self.name}",
+    "buildDev": "refmterr pesy build",
+    "release": {
+      "rewritePrefix": true,
+      "bin": [
+        "PesyPlayApp"
+      ]
+    }
+  },
+  "pesy": {
+    "azure-project": "tatchi/tatchi",
+    "github": "tatchi/pesy-reason-template"
+  },
+  "buildDirs": {
+    "library": {},
+    "bin": {
+      "imports": [
+        "Library = require('pesy-play/library')"
+      ],
+     "bin": {
+        "PesyPlayApp": "PesyPlayApp.re"
+      }
+    }
+  },
+  "scripts": {
+    "start": "esy x PesyPlayApp"
+  },
+  "dependencies": {
+    "@opam/dune": "*",
+    "@esy-ocaml/reason": "*",
+    "@pesy/esy-pesy": "0.1.0-alpha.11",
+    "ocaml": "~4.9.0"
+  },
+  "devDependencies": {
+    "@opam/merlin": "*",
+    "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
+    "refmterr": "*"
+  }
+}
