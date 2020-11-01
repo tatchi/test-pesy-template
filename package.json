@@ -14,7 +14,7 @@
   },
   "pesy": {
     "azure-project": "tatchi/tatchi",
-    "github": "tatchi/pesy-reason-template"
+    "github": "tatchi/test-pesy-template"
   },
   "buildDirs": {
     "library": {},
