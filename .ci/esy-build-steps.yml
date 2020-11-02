@@ -22,6 +22,14 @@ steps:
   - bash: 'ls -la /Users/runner/.esy/3'
     displayName: 'ls -la /Users/runner/.esy/3'
     continueOnError: true
+  - bash: 'ls'
+    displayName: 'ls ESY__CACHE_INSTALL_PATH'
+    continueOnError: true
+    workingDirectory: $(ESY__CACHE_INSTALL_PATH)/../../source
+  - bash: 'ls'
+    displayName: 'ls $(Agent.HomeDirectory)'
+    continueOnError: true
+    workingDirectory: $(Agent.HomeDirectory)
   - script: "esy build --release"
     displayName: "esy build --release"
   - script: "esy release"
