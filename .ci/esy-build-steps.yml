@@ -22,11 +22,23 @@ steps:
   - bash: 'ls -la /Users/runner/.esy/3'
     displayName: 'ls -la /Users/runner/.esy/3'
     continueOnError: true
-  - bash: 'ls'
-    displayName: 'ls ESY__CACHE_INSTALL_PATH'
+  - bash: 'ls -la'
+    displayName: 'ls $(ESY__CACHE_INSTALL_PATH)/../../source'
     continueOnError: true
     workingDirectory: $(ESY__CACHE_INSTALL_PATH)/../../source
-  - bash: 'ls'
+  - bash: 'ls -la'
+    displayName: 'ls $(ESY__CACHE_INSTALL_PATH)/../../'
+    continueOnError: true
+    workingDirectory: $(ESY__CACHE_INSTALL_PATH)/../../
+  - bash: 'ls -la'
+    displayName: 'ls $(ESY__CACHE_INSTALL_PATH)/../'
+    continueOnError: true
+    workingDirectory: $(ESY__CACHE_INSTALL_PATH)/../
+  - bash: 'ls -la'
+    displayName: 'ls $(ESY__CACHE_INSTALL_PATH)'
+    continueOnError: true
+    workingDirectory: $(ESY__CACHE_INSTALL_PATH)
+  - bash: 'ls -la'
     displayName: 'ls $(Agent.HomeDirectory)'
     continueOnError: true
     workingDirectory: $(Agent.HomeDirectory)
