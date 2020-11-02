@@ -13,6 +13,15 @@ steps:
     condition: eq(variables['AGENT.OS'], 'Linux')
   - template: utils/publish-sources.yml
   - template: utils/restore-build-cache.yml
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: /Users/runner/.esy/3
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: /Users/runner/.esy/3_________________________________________________________________
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(ESY__CACHE_INSTALL_PATH)
   - script: "esy build --release"
     displayName: "esy build --release"
   - script: "esy release"
