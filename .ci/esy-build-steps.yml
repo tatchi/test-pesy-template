@@ -15,12 +15,15 @@ steps:
   - template: utils/restore-build-cache.yml
   - bash: 'ls'
     displayName: 'ls'
+    continueOnError: true
     workingDirectory: /Users/runner/.esy/3
   - bash: 'ls'
     displayName: 'ls'
+    continueOnError: true
     workingDirectory: /Users/runner/.esy/3_________________________________________________________________
   - bash: 'ls'
     displayName: 'ls'
+    continueOnError: true
     workingDirectory: $(ESY__CACHE_INSTALL_PATH)
   - script: "esy build --release"
     displayName: "esy build --release"
